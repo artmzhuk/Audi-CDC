@@ -1303,10 +1303,28 @@ void CDC_Protocol(void)
       playIsPressed = 0;
       pinMode(2, INPUT);
     }
-
     if (playIsPressed == 1){
       needToReleasePlay = 1;
     }
+
+    if (needToReleaseForward == 1){
+      needToReleaseForward = 0;
+      forwardIsPressed = 0;
+      pinMode(3, INPUT);
+    }
+    if (forwardIsPressed == 1){
+      needToReleaseForward = 1;
+    }
+
+    if (needToReleaseBackward == 1){
+      needToReleaseBackward = 0;
+      backwardIsPressed = 0;
+      pinMode(4, INPUT);
+    }
+    if (backwardIsPressed == 1){
+      needToReleaseBackward = 1;
+    }
+
 
 
     SendPacket();
@@ -1788,7 +1806,10 @@ static void DecodeCommand(void)
 
 #endif
 
-    EnqueueString(sNEXT);
+    pinMode(3, OUTPUT);
+    digitalWrite(3, LOW); //forward button is pressed
+    forwardIsPressed = 1;
+    //EnqueueString(sNEXT);
 
     break;
 
@@ -1827,7 +1848,10 @@ static void DecodeCommand(void)
 
 #endif
 
-    EnqueueString(sPREVIOUS);
+    pinMode(4, OUTPUT);
+    digitalWrite(4, LOW); //forward button is pressed
+    backwardIsPressed = 1;
+    //EnqueueString(sPREVIOUS);
 
     break;
 
