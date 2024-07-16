@@ -566,6 +566,14 @@ uint8_t flag_50ms = false; // indicates that a period of 50ms isover
 uint8_t counter_timer0_overflows = 0; // timer0 overflow counts to calc 10ms
 #endif
 
+uint8_t playIsPressed = 0;
+uint8_t forwardIsPressed = 0;
+uint8_t backwardIsPressed = 0;
+
+uint8_t needToReleasePlay = 0;
+uint8_t needToReleaseForward = 0;
+uint8_t needToReleaseBackward = 0;
+
 /* -- Modul Global Function Prototypes ------------------------------------- */
 
 static void ScanCommandBytes(void);
@@ -784,6 +792,10 @@ void Init_VWCDC(void)
 
   sei();
   //    SREG |= 0x80;   // enable interrupts
+
+  pinMode(2, INPUT);
+  pinMode(3, INPUT);
+  pinMode(4, INPUT);
 }
 
 //-----------------------------------------------------------------------------
@@ -1286,6 +1298,17 @@ void CDC_Protocol(void)
 
     flag_50ms = FALSE;
 
+    if (needToReleasePlay == 1){
+      needToReleasePlay = 0;
+      playIsPressed = 0;
+      pinMode(2, INPUT);
+    }
+
+    if (playIsPressed == 1){
+      needToReleasePlay = 1;
+    }
+
+
     SendPacket();
 
     scancount++;
@@ -1694,8 +1717,10 @@ static void DecodeCommand(void)
     break;
 
   case Do_PLAY:
-
-    EnqueueString(sPLAY); // this will make the PJRC play/pause
+    pinMode(2, OUTPUT);
+    digitalWrite(2, LOW); //play button is pressed
+    playIsPressed = 1;
+    //EnqueueString(sPLAY); // this will make the PJRC play/pause
 
     break;
 
