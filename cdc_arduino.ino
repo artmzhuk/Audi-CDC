@@ -48,17 +48,16 @@
 
  *****************************************************************************/
 
-//#include "IS2020.h"
-
+// #include "IS2020.h"
 
 #define DEBUG 0
 #define RESET 4 //?
 #define BTSerial Serial
 
-//IS2020 BT(&BTSerial);
+// IS2020 BT(&BTSerial);
 
-//#define DUMPMODE
-//#define DUMPMODE2
+// #define DUMPMODE
+// #define DUMPMODE2
 
 #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__)
 #define TCCR2A TCCR2
@@ -79,12 +78,12 @@
 #endif
 
 // uncoment this to have original serial outputs for PJRC players
-//#define PJRC
+// #define PJRC
 
 /* enable hex control command on serial line to control mpd control
    script with shyd.de control script
 */
-//#define JUST_HEX_TO_SERIAL
+// #define JUST_HEX_TO_SERIAL
 
 /* enable bluetooth module control over serial line
    XS3868
@@ -94,11 +93,9 @@
 /*
    read disc# track# status over serial line
 */
-//#define DISC_TRACK_NUMBER_FROM_MPD
+// #define DISC_TRACK_NUMBER_FROM_MPD
 
 /* -- Includes ------------------------------------------------------------- */
-
-
 
 #include <avr/io.h>
 
@@ -110,29 +107,15 @@
 
 #include <avr/pgmspace.h>
 
-
-
-//#include <util/delay.h>
-
-
-
-
-
-
+// #include <util/delay.h>
 
 /* -- Configuration Parameters --------------------------------------------- */
 
-
-
 /* -- Makros --------------------------------------------------------------- */
-
-
 
 /* -- Defines -------------------------------------------------------------- */
 
 #define TRUE 1
-
-
 
 // Low period of PWTX line:
 
@@ -142,85 +125,73 @@
 
 // S: ~4.57ms
 
-
-
 // one tick is 0.5µs
 
-#define STARTTHRESHOLD  6400            // greater than this signifies START bit
+#define STARTTHRESHOLD 6400 // greater than this signifies START bit
 
-#define HIGHTHRESHOLD   2496       // greater than this signifies 1 bit.
+#define HIGHTHRESHOLD 2496 // greater than this signifies 1 bit.
 
-#define LOWTHRESHOLD     512        // greater than this signifies 0 bit.
+#define LOWTHRESHOLD 512 // greater than this signifies 0 bit.
 
-#define PKTSIZE          -32            // command packets are 32 bits long.
-
-
+#define PKTSIZE -32 // command packets are 32 bits long.
 
 // do not refresh head unit faster than 5.5ms (currently not implemented)
 
 // 5.24s slow refresh rate when head unit in FM/AM/Tape mode (not implemented)
 
+// #define REFRESH_PERIOD   50        // default to refresh head unit every 50.0ms
 
+#define SECONDWAIT -20 // wait 20 * 50ms to get 1 second (50ms*20 = 1000ms = 1s)
 
-//#define REFRESH_PERIOD   50        // default to refresh head unit every 50.0ms
+#define POWERIDENTWAIT -10 // wait 10 * 1s to 10 seconds between VWCDPICx.x display
 
-#define SECONDWAIT      -20         // wait 20 * 50ms to get 1 second (50ms*20 = 1000ms = 1s)
+#define SCANWAIT -100 // wait 100 * 50ms to get 5sec (50ms*100 = 5000ms = 5s)
 
-#define POWERIDENTWAIT  -10         // wait 10 * 1s to 10 seconds between VWCDPICx.x display
+#define _10MS 156
 
-#define SCANWAIT        -100             // wait 100 * 50ms to get 5sec (50ms*100 = 5000ms = 5s)
+#define _50MS 500
 
-#define _10MS           156
+#define _700US 7
 
-#define _50MS            500
+#define TX_BUFFER_END 12
 
-#define _700US            7
+#define CAP_BUFFER_END 24
 
+#define VER_MAJOR '1'
 
-#define TX_BUFFER_END   12
+#define VER_MINOR '0'
 
-#define CAP_BUFFER_END  24
-
-
-
-#define VER_MAJOR       '1'
-
-#define VER_MINOR       '0'
-
-#define VER_PATCHLEVEL  'b'
+#define VER_PATCHLEVEL 'b'
 
 #if defined(__AVR_ATmega328__) || defined(__AVR_ATmega328A__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328PA__) || defined(__AVR_ATmega328PB__)
-#define RADIO_COMMAND      PB0 //ICP
-#define RADIO_COMMAND_DDR  DDRB
-#define RADIO_COMMAND_PORT  PORTB
+#define RADIO_COMMAND PB0 // ICP
+#define RADIO_COMMAND_DDR DDRB
+#define RADIO_COMMAND_PORT PORTB
 #define RADIO_COMMAND_PIN PINB
-#define RADIO_CLOCK        PB5
-#define RADIO_CLOCK_DDR    DDRB
-#define RADIO_CLOCK_PORT  PORTB
-#define RADIO_DATA         PB3
-#define RADIO_DATA_DDR     DDRB
-#define RADIO_DATA_PORT  PORTB
-#define RADIO_ACC 3 //PE5 (INT5)
+#define RADIO_CLOCK PB5
+#define RADIO_CLOCK_DDR DDRB
+#define RADIO_CLOCK_PORT PORTB
+#define RADIO_DATA PB3
+#define RADIO_DATA_DDR DDRB
+#define RADIO_DATA_PORT PORTB
+#define RADIO_ACC 3 // PE5 (INT5)
 
 #endif
 
 #if defined(__AVR_ATmega324__) || defined(__AVR_ATmega324P__) || defined(__AVR_ATmega324A__) || defined(__AVR_ATmega324PA__) || defined(__AVR_ATmega324PB__)
-#define RADIO_COMMAND      PD6 //ICP 
-#define RADIO_COMMAND_DDR  DDRD
-#define RADIO_COMMAND_PORT  PORTD
+#define RADIO_COMMAND PD6 // ICP
+#define RADIO_COMMAND_DDR DDRD
+#define RADIO_COMMAND_PORT PORTD
 #define RADIO_COMMAND_PIN PIND
-#define RADIO_CLOCK        PB7
-#define RADIO_CLOCK_DDR    DDRB
-#define RADIO_CLOCK_PORT  PORTB
-#define RADIO_DATA         PB5
-#define RADIO_DATA_DDR     DDRB
-#define RADIO_DATA_PORT  PORTB
+#define RADIO_CLOCK PB7
+#define RADIO_CLOCK_DDR DDRB
+#define RADIO_CLOCK_PORT PORTB
+#define RADIO_DATA PB5
+#define RADIO_DATA_DDR DDRB
+#define RADIO_DATA_PORT PORTB
 #define RADIO_ACC 3
 
 #endif
-
-
-
 
 // Command Codes
 
@@ -282,63 +253,59 @@
 
 // 53 2C F8 07 Up
 
+// #define  Do_PLAY           0x08  // mix button held down (RCD300 head unit only)
 
+#define Do_PLAY 0x03 // mix button held down (RCD300 head unit only)
 
+#define Do_LOADCD 0x01 // not used
 
+#define Do_ENABLE_MK 0x08 // mk concert1
 
-//#define  Do_PLAY           0x08  // mix button held down (RCD300 head unit only)
+#define Do_CD1 0x0C // CD 1
 
-#define  Do_PLAY           0x03  // mix button held down (RCD300 head unit only)
+#define Do_DISABLE 0x10 // DISABLE
 
-#define  Do_LOADCD    0x01  // not used
+#define Do_CHANGECD 0x14 // Change CD (changer ignores & no ACK)
 
-#define  Do_ENABLE_MK      0x08  // mk concert1
+#define Do_PREVCD 0x18 // PREVIOUS CD (Audi Concert head unit)
 
-#define  Do_CD1            0x0C  // CD 1
+#define Do_CD5 0x2C // CD 5
 
-#define  Do_DISABLE        0x10  // DISABLE
+#define Do_TP 0x30 // TP info (TP button pressed)
 
-#define  Do_CHANGECD       0x14  // Change CD (changer ignores & no ACK)
-
-#define  Do_PREVCD         0x18  // PREVIOUS CD (Audi Concert head unit)
-
-#define  Do_CD5            0x2C  // CD 5
-
-#define  Do_TP             0x30  // TP info (TP button pressed)
-
-#define  Do_SEEKFORWARD_MK 0x38  // mk concert 1 LOAD CD (aka MINQUIRY).
+#define Do_SEEKFORWARD_MK 0x38 // mk concert 1 LOAD CD (aka MINQUIRY).
 
 // Also means "Next CD" if no CD button pressed
 
-#define  Do_CD3            0x4C  // CD 3
+#define Do_CD3 0x4C // CD 3
 
-#define  Do_SEEKBACK       0x58  // SEEK BACK
+#define Do_SEEKBACK 0x58 // SEEK BACK
 
-#define  Do_MIX_CD         0x60  // MIX 1 (mix tracks within one disc)
+#define Do_MIX_CD 0x60 // MIX 1 (mix tracks within one disc)
 
-#define  Do_UP_MK3         0x68  // UP (Mk3 head unit)
+#define Do_UP_MK3 0x68 // UP (Mk3 head unit)
 
-#define  Do_DOWN           0x78  // DOWN
+#define Do_DOWN 0x78 // DOWN
 
-#define  Do_CD2            0x8C  // CD 2
+#define Do_CD2 0x8C // CD 2
 
-#define  Do_SCAN           0xA0  // SCAN
+#define Do_SCAN 0xA0 // SCAN
 
-#define  Do_UNKNOWNCMD     0xA4  // power on CD mode?? (Audi Concert head unit)
+#define Do_UNKNOWNCMD 0xA4 // power on CD mode?? (Audi Concert head unit)
 
-#define  Do_DOWN_MK3       0xA8  // DOWN (Mk3 head unit only)
+#define Do_DOWN_MK3 0xA8 // DOWN (Mk3 head unit only)
 
-#define  Do_CD6            0xAC  // CD 6
+#define Do_CD6 0xAC // CD 6
 
-#define  Do_CD4            0xCC  // CD 4
+#define Do_CD4 0xCC // CD 4
 
-#define  Do_SEEKFORWARD    0xD8  // Seek Forward
+#define Do_SEEKFORWARD 0xD8 // Seek Forward
 
-#define  Do_MIX            0xE0  // MIX 6 (mix tracks across all discs)
+#define Do_MIX 0xE0 // MIX 6 (mix tracks across all discs)
 
-#define  Do_ENABLE         0xE4  // ENABLE
+#define Do_ENABLE 0xE4 // ENABLE
 
-#define  Do_UP             0xF8  // UP
+#define Do_UP 0xF8 // UP
 
 enum STATES
 
@@ -367,11 +334,7 @@ enum STATES
 
 };
 
-
-
 /* -- Types ---------------------------------------------------------------- */
-
-
 
 /* -- Extern Global Variables ---------------------------------------------- */
 
@@ -421,11 +384,11 @@ const uint8_t sIDENTIFY[] PROGMEM = "IDENTIFY\r\n"; //
 
 const uint8_t sNEWLINE[] PROGMEM = "NEWLINE\r\n"; //
 
-const uint8_t sDASH[] PROGMEM = "DASH\r\n"; // 
+const uint8_t sDASH[] PROGMEM = "DASH\r\n"; //
 
-const uint8_t sHEX[] PROGMEM = "HEX\r\n"; // 
+const uint8_t sHEX[] PROGMEM = "HEX\r\n"; //
 
-const uint8_t sVERSION[] PROGMEM = "VERSION\r\n"; // 
+const uint8_t sVERSION[] PROGMEM = "VERSION\r\n"; //
 
 #else
 
@@ -477,25 +440,20 @@ const uint8_t sDASH[] PROGMEM = "_";
 
 const uint8_t sHEX[] PROGMEM = {
 
-  '0', 0, '1', 0, '2', 0, '3', 0, '4', 0, '5', 0, '6', 0, '7', 0, '8', 0, '9', 0, 'A', 0, 'B', 0, 'C', 0, 'D', 0, 'E', 0, 'F', 0
+    '0', 0, '1', 0, '2', 0, '3', 0, '4', 0, '5', 0, '6', 0, '7', 0, '8', 0, '9', 0, 'A', 0, 'B', 0, 'C', 0, 'D', 0, 'E', 0, 'F', 0
 
 };
 
 const uint8_t sVERSION[] PROGMEM = {
 
-  VER_MAJOR, '.', VER_MINOR, VER_PATCHLEVEL, 0
+    VER_MAJOR, '.', VER_MINOR, VER_PATCHLEVEL, 0
 
 };
 #endif
 
-
-
-
 uint8_t sendreg;
 
 uint8_t sendbitcount; // Used in SendByte routine
-
-
 
 uint8_t disc = 1;
 
@@ -507,7 +465,6 @@ uint8_t second = 0;
 
 uint8_t leds = 0;
 
-
 uint8_t scanptr; // pointer to command byte to inspect next
 
 uint8_t fsr;
@@ -516,23 +473,17 @@ uint8_t scanbyte; // most recently retrieved command byte
 
 uint8_t cmdcode; // command code received from head unit (byte 3)
 
-
-
 // these storage bytes are for the ISR to save process state so that it
 
 // doesn't adversely affect the main loop code. you must -not- use these
 
 // variables for anything else, as the ISR -will- corrupt them.
 
-
-
 uint8_t intwsave;
 
 uint8_t intstatussave;
 
 uint8_t intfsrsave;
-
-
 
 // the 'capbusy' flag will be set when the ISR is busy capturing a command
 
@@ -544,17 +495,11 @@ uint8_t intfsrsave;
 
 // long only).
 
-
-
 uint8_t capbusy;
-
-
 
 // 'mix' and 'scan' flags specify whether we want to light up the MIX light
 
 // or SCAN display on the head unit.
-
-
 
 uint8_t mix;
 
@@ -574,8 +519,6 @@ uint8_t overflow;
 
 uint8_t dataerr;
 
-
-
 #ifdef DUMPMODE
 
 // The ISR will set 'startbit' flag if it detected a start bit.
@@ -583,12 +526,6 @@ uint8_t dataerr;
 uint8_t startbit;
 
 #endif
-
-
-
-
-
-
 
 uint16_t captime; // timer count of low pulse (temp)
 
@@ -598,8 +535,6 @@ int8_t capbitpacket; // bits left to capture for the entire packet
 
 uint8_t capptr; // pointer to packet capture buffer loc
 
-
-
 uint8_t BIDIstate; // pointer to the current state handler routine
 
 int8_t BIDIcount; // counts how long to stay in current state
@@ -608,15 +543,11 @@ uint8_t ACKcount; // number of ACK bits to set.
 
 uint8_t discload; // next disc number to load
 
-
-
 int8_t poweridentcount; // counts down until we should send VWCDPICx.x
 
 uint8_t secondcount; // counts down until one second has passed
 
 int8_t scancount; // used to count down displaying SCAN mode
-
-
 
 uint8_t txinptr;
 
@@ -632,12 +563,10 @@ uint8_t counter_10ms_u8 = 0; // counter for 10ms intervals
 
 uint8_t flag_50ms = false; // indicates that a period of 50ms isover
 #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__)
-uint8_t counter_timer0_overflows = 0; //timer0 overflow counts to calc 10ms
+uint8_t counter_timer0_overflows = 0; // timer0 overflow counts to calc 10ms
 #endif
 
 /* -- Modul Global Function Prototypes ------------------------------------- */
-
-
 
 static void ScanCommandBytes(void);
 
@@ -697,15 +626,9 @@ static void printstr_p(const char *s);
 
 #define FALSE 0
 
-
-
 /* -- Makros --------------------------------------------------------------- */
 
-
-
 /* -- Implementation Functions --------------------------------------------- */
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -735,33 +658,26 @@ static void printstr_p(const char *s);
 
 //-----------------------------------------------------------------------------
 
-
-
 void Init_VWCDC(void)
 
 {
   cli();
-  //on arduino timer0 is used for millis(), we change prescaler, but also need to disable overflow interrupt
+  // on arduino timer0 is used for millis(), we change prescaler, but also need to disable overflow interrupt
   TIMSK0 = 0x00;
-
 
   //  DDRA |= _BV(DDA6); // debug pin
 
   RADIO_CLOCK_DDR |= _BV(RADIO_CLOCK);
 
-  RADIO_DATA_DDR  |= _BV(RADIO_DATA);
+  RADIO_DATA_DDR |= _BV(RADIO_DATA);
 
   RADIO_COMMAND_DDR &= ~_BV(RADIO_COMMAND); // input capture as input
 
   RADIO_COMMAND_PORT |= _BV(RADIO_COMMAND); // enable pull up
 
+  // Timer1 init
 
-
-
-
-  //Timer1 init
-
-  //Used for timing the incoming commands from headunit
+  // Used for timing the incoming commands from headunit
 
   TCCR1A = 0x00; // Normal port operation, OC1A/OC1B/OC1C disconnected
 
@@ -773,22 +689,15 @@ void Init_VWCDC(void)
 
   TIMSK1 |= _BV(ICIE1); // enable input capture interrupt on timer1
 
+  // Timer 2 Init
 
-
-  //Timer 2 Init
-
-  //Timer 2 used to time the intervals between package bytes
+  // Timer 2 used to time the intervals between package bytes
 
   OCR2A = 175; // 4µs x 175 = 700µs
 
   TCCR2A |= _BV(WGM21); // Timer2 in CTC Mode
 
   TCCR2B |= _BV(CS22); // prescaler = 64 -> 1 timer clock tick is 4us long
-
-
-
-
-
 
   capptr = 0; // indirect pointer to capture buffer
 
@@ -799,8 +708,6 @@ void Init_VWCDC(void)
   txinptr = 0; // queue pointers
 
   txoutptr = 0;
-
-
 
   capbusy = FALSE; // reset flags
 
@@ -814,8 +721,6 @@ void Init_VWCDC(void)
 
   dataerr = FALSE;
 
-
-
 #ifdef DUMPMODE
 
   startbit = FALSE;
@@ -823,8 +728,6 @@ void Init_VWCDC(void)
 #endif
 
   ACKcount = 0;
-
-
 
   // these values can be set depending on the state of mp3
 
@@ -834,20 +737,11 @@ void Init_VWCDC(void)
 
   track = 0x01; // track 1
 
-
-
   poweridentcount = POWERIDENTWAIT;
-
-
 
   ResetTime();
 
   SetStateIdleThenPlay();
-
-
-
-
-
 
   EnqueueString(sIDENTIFY);
 
@@ -857,20 +751,19 @@ void Init_VWCDC(void)
 
   EnqueueString(sRING);
 
+  // Timer 0 init
 
-  //Timer 0 init
-
-  //Timer 0 used to time the interval between each update
+  // Timer 0 used to time the interval between each update
 
 #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__)
 
-  //no CTc mode, we must overflow
+  // no CTc mode, we must overflow
   TIMSK |= _BV(TOIE0);
 
   TCCR0B |= _BV(CS00) + _BV(CS01); // prescaler = 64 -> timer clock tick is 4us long
 
-  //timer0 overflow after 256counts, oveflow interup routine is fired every 1024us (4*256)
-  //we need 50 overflows to count to 50ms
+  // timer0 overflow after 256counts, oveflow interup routine is fired every 1024us (4*256)
+  // we need 50 overflows to count to 50ms
 #define _TIMER0_OVERFLOW_COUNTS 50
 
 #else
@@ -887,17 +780,10 @@ void Init_VWCDC(void)
 
 #endif
 
-
-
-
-
-
   SendPacket(); // force first display update packet
-
 
   sei();
   //    SREG |= 0x80;   // enable interrupts
-
 }
 
 //-----------------------------------------------------------------------------
@@ -932,8 +818,6 @@ void Init_VWCDC(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 ISR(TIMER2_COMPA_vect)
 
 {
@@ -950,17 +834,11 @@ ISR(TIMER2_COMPA_vect)
 
   TIFR2 |= _BV(OCF2A);
 
-
-
-
-
   if (display_byte_counter_u8 < 8)
 
   {
 
     byte_u8 = display_byte_buffer_mau8[display_byte_counter_u8];
-
-
 
 #ifdef DUMPMODE2
 
@@ -971,7 +849,6 @@ ISR(TIMER2_COMPA_vect)
     Serial.print("|");
 
 #endif
-
 
     for (sendbitcount = -8; sendbitcount != 0; sendbitcount++)
 
@@ -986,7 +863,6 @@ ISR(TIMER2_COMPA_vect)
       {
 
         RADIO_CLOCK_PORT |= _BV(RADIO_DATA); // DATA high
-
       }
 
       else
@@ -994,44 +870,31 @@ ISR(TIMER2_COMPA_vect)
       {
 
         RADIO_CLOCK_PORT &= ~_BV(RADIO_DATA); // DATA low
-
       }
-
-
 
       byte_u8 <<= 1; // load the next bit
 
       RADIO_CLOCK_PORT &= ~_BV(RADIO_CLOCK); // SCLK low
 
       //_delay_loop_1(40);
-
     }
 
     display_byte_counter_u8++;
 
     TCCR2B |= _BV(CS22); // prescaler = 64 -> 1 timer clock tick is 4us long
 
-    //TCCR2B |= _BV(CS20);
-
-
-
+    // TCCR2B |= _BV(CS20);
   }
 
   else
 
   {
 
-
-
     display_byte_counter_u8 = 0;
 
     TIMSK2 &= ~_BV(OCIE2A); // disable output compare interrupt on timer2
-
   }
-
 }
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -1065,21 +928,20 @@ ISR(TIMER2_COMPA_vect)
 
 //-----------------------------------------------------------------------------
 
-
 #if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__)
 
-ISR(TIMER0_OVF_vect) {
+ISR(TIMER0_OVF_vect)
+{
   counter_timer0_overflows++;
 
-  if (counter_timer0_overflows = _TIMER0_OVERFLOW_COUNTS )
+  if (counter_timer0_overflows = _TIMER0_OVERFLOW_COUNTS)
   {
     counter_timer0_overflows = 0;
 
     flag_50ms = TRUE;
-
   }
   TIFR &= ~(1 << TOV0);
-  TCNT0 = 5;// to get overflowed after 1000us 1024-(6x4us)=1000us  counting from 0... 0,1,2,3,4,5 = 6ticks
+  TCNT0 = 5; // to get overflowed after 1000us 1024-(6x4us)=1000us  counting from 0... 0,1,2,3,4,5 = 6ticks
 }
 
 #else
@@ -1097,12 +959,9 @@ ISR(TIMER0_COMPA_vect)
     counter_10ms_u8 = 0;
 
     flag_50ms = TRUE;
-
   }
-
 }
 #endif
-
 
 //-----------------------------------------------------------------------------
 
@@ -1132,19 +991,15 @@ ISR(TIMER0_COMPA_vect)
 
 //-----------------------------------------------------------------------------
 
-
-
 ISR(TIMER1_OVF_vect)
 
 {
 
-  //Serial.println("TIMER1_OVF_vect");
+  // Serial.println("TIMER1_OVF_vect");
 
   TIMSK1 &= ~_BV(TOIE1); // disable further timer 1 interrupts
 
   capbusy = FALSE; // set flag signifying packet capture done
-
-
 
   if (capbit > -8) // are we already capturing on a blank byte?
 
@@ -1162,8 +1017,6 @@ ISR(TIMER1_OVF_vect)
 
     // rotating the bits upward so that the data is nicely formatted
 
-
-
     while (capbit != 0) // have we finished rotating all bits up?
 
     {
@@ -1171,7 +1024,6 @@ ISR(TIMER1_OVF_vect)
       capbuffer[capptr] <<= 1; // rotate in 0 bit
 
       capbit++;
-
     }
 
     capbit = -8;
@@ -1183,7 +1035,6 @@ ISR(TIMER1_OVF_vect)
     { // capture buffer?
 
       capptr = 0; // yes, roll over to beginning
-
     }
 
     if (capptr == scanptr) // have we overflowed the capture queue?
@@ -1191,14 +1042,9 @@ ISR(TIMER1_OVF_vect)
     {
 
       overflow = TRUE; // yes, set error flag
-
     }
-
   }
-
 }
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -1228,8 +1074,6 @@ ISR(TIMER1_OVF_vect)
 
 //-----------------------------------------------------------------------------
 
-
-
 ISR(TIMER1_CAPT_vect)
 
 {
@@ -1240,8 +1084,6 @@ ISR(TIMER1_CAPT_vect)
 
   TCNT1 = 0; // clear timer1
 
-
-
   if ((RADIO_COMMAND_PIN & _BV(RADIO_COMMAND)) == 0)
 
   {
@@ -1250,8 +1092,6 @@ ISR(TIMER1_CAPT_vect)
 
     // Low pulse length must be timed to determine bit value
 
-
-
     TIFR1 |= _BV(TOV1); // clear timer1 overflow flag
 
     TIMSK1 |= _BV(TOIE1); // enable timer1 interrupt on overflow
@@ -1259,7 +1099,6 @@ ISR(TIMER1_CAPT_vect)
     TCCR1B |= _BV(ICES1); // change input capture to rising edge
 
     TIFR1 |= _BV(ICF1); // clear input capture interrupt request flag
-
   }
 
   else
@@ -1278,8 +1117,6 @@ ISR(TIMER1_CAPT_vect)
 
     TIFR1 |= _BV(ICF1); // clear input capture interrupt request flag
 
-
-
     if (TIMSK1 & _BV(TOIE1)) // are we trying to capture data?
 
     {
@@ -1288,7 +1125,7 @@ ISR(TIMER1_CAPT_vect)
 
       TIMSK1 &= ~_BV(TOIE1); // turn off capturing time for high pulse
 
-      //Serial.println(captime);
+      // Serial.println(captime);
 
       if (captime > STARTTHRESHOLD)
 
@@ -1320,8 +1157,6 @@ ISR(TIMER1_CAPT_vect)
 
           // rotating the bits upward so that the data is nicely formatted
 
-
-
           while (capbit != 0) // have we finished rotating all bits up?
 
           {
@@ -1329,7 +1164,6 @@ ISR(TIMER1_CAPT_vect)
             capbuffer[capptr] <<= 1; // rotate in 0 bit
 
             capbit++;
-
           }
 
           capbit = -8;
@@ -1341,7 +1175,6 @@ ISR(TIMER1_CAPT_vect)
           { // capture buffer?
 
             capptr = 0; // yes, roll over to beginning
-
           }
 
           if (capptr == scanptr) // have we overflowed the capture queue?
@@ -1349,11 +1182,8 @@ ISR(TIMER1_CAPT_vect)
           {
 
             overflow = TRUE; // yes, set error flag
-
           }
-
         }
-
       }
 
       else
@@ -1366,14 +1196,11 @@ ISR(TIMER1_CAPT_vect)
 
           capbuffer[capptr] <<= 1; // nope
 
-
-
           if (captime > HIGHTHRESHOLD)
 
           {
 
             capbuffer[capptr] |= 1;
-
           }
 
           capbitpacket++;
@@ -1387,7 +1214,6 @@ ISR(TIMER1_CAPT_vect)
             // capturing bits for now.
 
             capbusy = FALSE; // clear capture busy flag
-
           }
 
           capbit++;
@@ -1405,7 +1231,6 @@ ISR(TIMER1_CAPT_vect)
             { // capture buffer?
 
               capptr = 0; // yes, roll over to beginning
-
             }
 
             if (capptr == scanptr) // have we overflowed the capture queue?
@@ -1413,22 +1238,13 @@ ISR(TIMER1_CAPT_vect)
             {
 
               overflow = TRUE; // yes, set error flag
-
             }
-
           }
-
         }
-
       }
-
     }
-
   }
-
 }
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -1458,15 +1274,11 @@ ISR(TIMER1_CAPT_vect)
 
 //-----------------------------------------------------------------------------
 
-
-
 void CDC_Protocol(void)
 
 {
 
   uint8_t decimal_adjust_u8;
-
-
 
   if (flag_50ms == TRUE)
 
@@ -1486,7 +1298,6 @@ void CDC_Protocol(void)
 
       scan = FALSE; // turn off scan display
       leds &= 0xEF;
-
     }
 
     secondcount++;
@@ -1499,7 +1310,6 @@ void CDC_Protocol(void)
 
       poweridentcount++;
 
-
       if (poweridentcount == 0)
 
       {
@@ -1511,7 +1321,6 @@ void CDC_Protocol(void)
         EnqueueString(sVERSION);
 
         EnqueueString(sNEWLINE);
-
       }
 
       second++; // increment the time display
@@ -1523,7 +1332,6 @@ void CDC_Protocol(void)
       {
 
         second += 6; // yes, add 6 and we'll be at x0 instead
-
       }
 
       if (second == 0x60)
@@ -1541,7 +1349,6 @@ void CDC_Protocol(void)
         {
 
           minute += 6; // yes, add 6 and we'll be at x0 instead
-
         }
 
         if (minute == 0xA0) // have we gone beyond 99 minutes?
@@ -1549,16 +1356,10 @@ void CDC_Protocol(void)
         {
 
           minute = 0;
-
         }
-
       }
-
     }
-
   }
-
-
 
   if (overflow == TRUE) // has the command receive code detected
 
@@ -1567,7 +1368,6 @@ void CDC_Protocol(void)
     overflow = FALSE; // clear error flag
 
     EnqueueString(sOVERFLOW);
-
   }
 
   if (dataerr == TRUE) // has the command receive code detected
@@ -1577,7 +1377,6 @@ void CDC_Protocol(void)
     dataerr = FALSE; // clear error flag
 
     EnqueueString(sDATAERR);
-
   }
 
 #ifndef DUMPMODE
@@ -1593,7 +1392,6 @@ void CDC_Protocol(void)
     startbit = FALSE;
 
     EnqueueString(sNEWLINE); // yes, start a new line
-
   }
 
   fsr = scanptr;
@@ -1605,20 +1403,15 @@ void CDC_Protocol(void)
     scanptr = fsr;
 
     EnqueueHex(scanbyte);
-
   }
 
 #endif
-
-
-
-
 
   while (txoutptr != txinptr)
 
   {
 
-    printstr_p((char*) txbuffer[txoutptr]);
+    printstr_p((char *)txbuffer[txoutptr]);
 
     txoutptr++;
 
@@ -1627,15 +1420,9 @@ void CDC_Protocol(void)
     {
 
       txoutptr = 0;
-
     }
-
   }
-
 }
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -1737,8 +1524,6 @@ void CDC_Protocol(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void DecodeCommand(void)
 
 {
@@ -1749,443 +1534,390 @@ static void DecodeCommand(void)
   Serial.write(cmdcode);
 #endif
 
-  switch (cmdcode) {
+  switch (cmdcode)
+  {
 
-    case Do_CHANGECD:
+  case Do_CHANGECD:
 
-      // Head unit seems to send this after each CDx number change
+    // Head unit seems to send this after each CDx number change
 
-      // but the CD Changer seems to completely ignore (doesn't even ACK it).
+    // but the CD Changer seems to completely ignore (doesn't even ACK it).
 
-      ACKcount = 0; // do not ack this command
+    ACKcount = 0; // do not ack this command
 #ifdef PJRC
-      EnqueueString(sRANDOM);
+    EnqueueString(sRANDOM);
 #endif
 
-      break;
+    break;
 
+  case Do_ENABLE:
 
+  case Do_ENABLE_MK:
 
-    case Do_ENABLE:
+    mix = FALSE;
 
-    case Do_ENABLE_MK:
+    if (playing == FALSE)
+
+    {
+
+      SetStateInitPlay(); // skip this if already playing
+    }
+    if (!mix_button)
+      EnqueueString(sMENABLE);
+
+    break;
+
+  case Do_LOADCD:
+
+    if (playing == TRUE)
+
+    {
+
+      SetStateInitPlay(); // skip this if we're in idle mode
+    }
+
+    ResetTime();
+
+    EnqueueString(sMINQUIRY);
+
+    break;
+
+  case Do_DISABLE:
+
+    SetStateIdle(); // skip this if we're already in idle mode
+
+#ifndef DISC_TRACK_NUMBER_FROM_MPD
+
+    //      disc = 0x41; // set back to CD 1
+
+#endif
+
+    EnqueueString(sMDISABLE);
+
+    break;
+
+  case Do_SEEKBACK:
+
+  case Do_PREVCD:
+
+    ResetTime();
+
+    EnqueueString(sPRV_LIST);
+
+#ifndef DISC_TRACK_NUMBER_FROM_MPD
+
+    disc--;
+
+    if ((disc & 0x0F) == 0)
+
+    {
+
+      disc = 0x46; // set back to CD 1
+    }
+#endif
+    break;
+
+  case Do_SEEKFORWARD:
+
+  case Do_SEEKFORWARD_MK:
+
+    ResetTime();
+
+    if (cd_button == FALSE) // mk don't increment when previous command was a cd button
+
+    {
+
+      EnqueueString(sNXT_LIST);
+
+#ifndef DISC_TRACK_NUMBER_FROM_MPD
+
+      disc++;
+
+      if (disc > 0x46)
+
+      {
+
+        disc = 0x41;
+      }
+
+#endif
+
+      // Going beyond CD9 displays hex codes on premium head unit.
+
+      // Examples: "CD A"
+
+      //           "CD B"
+
+      //           "CD C" etc...
+
+      //
+
+      // However, going beyond CD6 mutes audio on monsoon head unit, so we
+
+      // definitely don't want to do that.
+    }
+
+    else
+
+    {
+
+      cd_button = FALSE; // mk clear cd button flag
+    }
+
+    break;
+
+  case Do_MIX:
+
+  case Do_MIX_CD:
+
+    mix_button = 1;
+#ifndef DISC_TRACK_NUMBER_FROM_MPD
+
+    if (mix == FALSE)
+
+    {
+
+      mix = TRUE;
+    }
+
+    else
+
+    {
 
       mix = FALSE;
-
-      if (playing == FALSE)
-
-      {
-
-        SetStateInitPlay(); // skip this if already playing
-
-      }
-      if (!mix_button)
-        EnqueueString(sMENABLE);
-
-      break;
-
-
-
-    case Do_LOADCD:
-
-      if (playing == TRUE)
-
-      {
-
-        SetStateInitPlay(); // skip this if we're in idle mode
-
-      }
-
-      ResetTime();
-
-      EnqueueString(sMINQUIRY);
-
-      break;
-
-
-
-    case Do_DISABLE:
-
-      SetStateIdle(); // skip this if we're already in idle mode
-
-#ifndef DISC_TRACK_NUMBER_FROM_MPD
-
-      //      disc = 0x41; // set back to CD 1
+    }
 
 #endif
 
-      EnqueueString(sMDISABLE);
+    EnqueueString(sRANDOM);
 
-      break;
+    break;
 
+  case Do_PLAY:
 
+    EnqueueString(sPLAY); // this will make the PJRC play/pause
 
-    case Do_SEEKBACK:
+    break;
 
-    case Do_PREVCD:
+  case Do_SCAN:
 
-      ResetTime();
-
-      EnqueueString(sPRV_LIST);
-
-
-#ifndef DISC_TRACK_NUMBER_FROM_MPD
-
-      disc--;
-
-      if ((disc & 0x0F) == 0)
-
-      {
-
-        disc = 0x46; // set back to CD 1
-
-      }
-#endif
-      break;
-
-
-
-    case Do_SEEKFORWARD:
-
-    case Do_SEEKFORWARD_MK:
-
-      ResetTime();
-
-      if (cd_button == FALSE) // mk don't increment when previous command was a cd button
-
-      {
-
-        EnqueueString(sNXT_LIST);
+    scancount = SCANWAIT;
 
 #ifndef DISC_TRACK_NUMBER_FROM_MPD
 
-        disc++;
+    if (scan == FALSE)
 
-        if (disc > 0x46)
+    {
 
-        {
+      scan = TRUE;
+    }
 
-          disc = 0x41;
+    else
 
-        }
+    {
 
-#endif
-
-        // Going beyond CD9 displays hex codes on premium head unit.
-
-        // Examples: "CD A"
-
-        //           "CD B"
-
-        //           "CD C" etc...
-
-        //
-
-        // However, going beyond CD6 mutes audio on monsoon head unit, so we
-
-        // definitely don't want to do that.
-
-      }
-
-      else
-
-      {
-
-        cd_button = FALSE; // mk clear cd button flag
-
-      }
-
-      break;
-
-
-
-    case Do_MIX:
-
-    case Do_MIX_CD:
-
-      mix_button = 1;
-#ifndef DISC_TRACK_NUMBER_FROM_MPD
-
-      if (mix == FALSE)
-
-      {
-
-        mix = TRUE;
-
-      }
-
-      else
-
-      {
-
-        mix = FALSE;
-
-      }
-
-#endif
-
-      EnqueueString(sRANDOM);
-
-      break;
-
-
-
-    case Do_PLAY:
-
-      EnqueueString(sPLAY); // this will make the PJRC play/pause
-
-      break;
-
-
-
-    case Do_SCAN:
-
-
-
-      scancount = SCANWAIT;
-
-#ifndef DISC_TRACK_NUMBER_FROM_MPD
-
-      if (scan == FALSE)
-
-      {
-
-        scan = TRUE;
-
-      }
-
-      else
-
-      {
-
-        scan = FALSE;
-
-      }
+      scan = FALSE;
+    }
 
 #endif
 
 #ifdef PJRC
-      EnqueueString(sPLAY); // this will make the PJRC play/pause
+    EnqueueString(sPLAY); // this will make the PJRC play/pause
 #else
-      EnqueueString(sSCAN); //
+    EnqueueString(sSCAN); //
 #endif
-      break;
+    break;
 
+  case Do_UP:
 
+  case Do_UP_MK3:
 
-    case Do_UP:
+    if (playing == TRUE) // skip track lead-in if not in play mode
 
-    case Do_UP_MK3:
+    {
 
-      if (playing == TRUE) // skip track lead-in if not in play mode
+      SetStateTrackLeadIn();
+    }
 
-      {
-
-        SetStateTrackLeadIn();
-
-      }
-
-      ResetTime();
+    ResetTime();
 
 #ifndef DISC_TRACK_NUMBER_FROM_MPD
 
-      track++;
+    track++;
 
-      decimal_adjust_u8 = track & 0x0F; // skip past hexidecimal codes
+    decimal_adjust_u8 = track & 0x0F; // skip past hexidecimal codes
 
-      if (decimal_adjust_u8 == 0x0A) // are with at xA?
+    if (decimal_adjust_u8 == 0x0A) // are with at xA?
 
-      {
+    {
 
-        track += 6; // yes, add 6 and we'll be at x0 instead
+      track += 6; // yes, add 6 and we'll be at x0 instead
+    }
 
-      }
+    if (track == 0xA0) // have we gone beyond Track 99?
 
-      if (track == 0xA0) // have we gone beyond Track 99?
+    { // yes, rollover to Track 01 so that jog wheels
 
-      { // yes, rollover to Track 01 so that jog wheels
-
-        track = 1; // can continue rolling (Audi Concert II)
-
-      }
+      track = 1; // can continue rolling (Audi Concert II)
+    }
 
 #endif
 
-      EnqueueString(sNEXT);
+    EnqueueString(sNEXT);
 
-      break;
+    break;
 
+  case Do_DOWN:
 
+  case Do_DOWN_MK3:
 
-    case Do_DOWN:
+    if (playing == TRUE) // skip track lead-in if not in play mode
 
-    case Do_DOWN_MK3:
+    {
 
-      if (playing == TRUE) // skip track lead-in if not in play mode
+      SetStateTrackLeadIn();
+    }
 
-      {
-
-        SetStateTrackLeadIn();
-
-      }
-
-      ResetTime();
+    ResetTime();
 
 #ifndef DISC_TRACK_NUMBER_FROM_MPD
 
-      decimal_adjust_u8 = track & 0x0F; // skip past hexidecimal codes
+    decimal_adjust_u8 = track & 0x0F; // skip past hexidecimal codes
 
-      if (decimal_adjust_u8 == 0) // are we at x0?
+    if (decimal_adjust_u8 == 0) // are we at x0?
 
-      {
+    {
 
-        track -= 6; // yes, subtract 6 and we'll be at x9 instead
+      track -= 6; // yes, subtract 6 and we'll be at x9 instead
+    }
 
-      }
+    track--;
 
-      track--;
+    if (track == 0) // have we gone below Track 1?
 
-      if (track == 0) // have we gone below Track 1?
+    { // yes, rollover to Track 99 so that jog wheels
 
-      { // yes, rollover to Track 99 so that jog wheels
-
-        track = 0x99; // can continue rolling (Audi Concert II)
-
-      }
+      track = 0x99; // can continue rolling (Audi Concert II)
+    }
 
 #endif
 
-      EnqueueString(sPREVIOUS);
+    EnqueueString(sPREVIOUS);
 
-      break;
+    break;
 
+  case Do_CD1:
 
-
-    case Do_CD1:
-
-      cd_button = TRUE; // mk store cd button pressed
+    cd_button = TRUE; // mk store cd button pressed
 
 #ifndef DISC_TRACK_NUMBER_FROM_MPD
 
-      disc = 0x41; // set CD 1
+    disc = 0x41; // set CD 1
 
 #endif
 
-      EnqueueString(sLIST1);
+    EnqueueString(sLIST1);
 
-      break;
+    break;
 
+  case Do_CD2:
 
-
-    case Do_CD2:
-
-      cd_button = TRUE; // mk store cd button pressed
+    cd_button = TRUE; // mk store cd button pressed
 
 #ifndef DISC_TRACK_NUMBER_FROM_MPD
 
-      disc = 0x42; // set CD 2
+    disc = 0x42; // set CD 2
 
 #endif
 
-      EnqueueString(sLIST2);
+    EnqueueString(sLIST2);
 
-      break;
+    break;
 
+  case Do_CD3:
 
-
-    case Do_CD3:
-
-      cd_button = TRUE; // mk store cd button pressed
+    cd_button = TRUE; // mk store cd button pressed
 
 #ifndef DISC_TRACK_NUMBER_FROM_MPD
 
-      disc = 0x43; // set CD 3
+    disc = 0x43; // set CD 3
 
 #endif
 
-      EnqueueString(sLIST3);
+    EnqueueString(sLIST3);
 
-      break;
+    break;
 
+  case Do_CD4:
 
-
-    case Do_CD4:
-
-      cd_button = TRUE; // mk store cd button pressed
+    cd_button = TRUE; // mk store cd button pressed
 
 #ifndef DISC_TRACK_NUMBER_FROM_MPD
 
-      disc = 0x44; // set CD 4
+    disc = 0x44; // set CD 4
 
 #endif
 
-      EnqueueString(sLIST4);
+    EnqueueString(sLIST4);
 
-      break;
+    break;
 
+  case Do_CD5:
 
-
-    case Do_CD5:
-
-      cd_button = TRUE; // mk store cd button pressed
+    cd_button = TRUE; // mk store cd button pressed
 
 #ifndef DISC_TRACK_NUMBER_FROM_MPD
 
-      disc = 0x45; // set CD 5
+    disc = 0x45; // set CD 5
 
 #endif
 
-      EnqueueString(sLIST5);
+    EnqueueString(sLIST5);
 
-      break;
+    break;
 
+  case Do_CD6:
 
-
-    case Do_CD6:
-
-      cd_button = TRUE; // mk store cd button pressed
+    cd_button = TRUE; // mk store cd button pressed
 
 #ifndef DISC_TRACK_NUMBER_FROM_MPD
 
-      disc = 0x46; // set CD 6
+    disc = 0x46; // set CD 6
 
 #endif
 
-      EnqueueString(sLIST6);
+    EnqueueString(sLIST6);
 
-      break;
+    break;
 
-    case Do_TP:
-      if (playing == TRUE) {
-        SetStateTP();
-      } else {
-        SetStateInitPlay();
-      }
-      break;
+  case Do_TP:
+    if (playing == TRUE)
+    {
+      SetStateTP();
+    }
+    else
+    {
+      SetStateInitPlay();
+    }
+    break;
 
-    default:
+  default:
 
+    /* if execution reaches here, we have verified that we got
+       a valid command packet, but the command code received is not
+       one that we understand.
 
+       Dump the unknown command code for the user to view.
+    */
 
-      /* if execution reaches here, we have verified that we got
-         a valid command packet, but the command code received is not
-         one that we understand.
+    EnqueueString(sDASH);
 
-         Dump the unknown command code for the user to view.
-      */
+    EnqueueHex(cmdcode);
 
+    EnqueueString(sNEWLINE);
 
-
-      EnqueueString(sDASH);
-
-      EnqueueHex(cmdcode);
-
-      EnqueueString(sNEWLINE);
-
-      break;
-
+    break;
   }
-
 }
 
 int main()
@@ -2197,38 +1929,38 @@ int main()
 #ifdef BLUETOOTH
 #if defined(__AVR_ATmega324__) || defined(__AVR_ATmega324A__) || defined(__AVR_ATmega324P__) || defined(__AVR_ATmega324PA__) || defined(__AVR_ATmega324PB__) || defined(__AVR_ATmega324PB__)
   Serial.begin(115200);
-  //#else 8
-  //Serial.begin(115200);
+  // #else 8
+  // Serial.begin(115200);
 #endif
 #endif
 
 #ifdef DISC_TRACK_NUMBER_FROM_MPD
 #if defined(__AVR_ATmega324__) || defined(__AVR_ATmega324A__) || defined(__AVR_ATmega324P__) || defined(__AVR_ATmega324PA__) || defined(__AVR_ATmega324PB__) || defined(__AVR_ATmega324PB__)
   Serial.begin(115200);
-  //#else
-  //Serial.begin(115200);
+  // #else
+  // Serial.begin(115200);
 #endif
 #endif
 
   Init_VWCDC();
 
 #ifdef DISC_TRACK_NUMBER_FROM_MPD
-  //start in idle mode
+  // start in idle mode
   SetStateIdle();
 #endif
-
 
   while (1)
 
   {
 
 #ifdef DISC_TRACK_NUMBER_FROM_MPD
-    if (Serial.available() > 0) {
+    if (Serial.available() > 0)
+    {
       int r = Serial.read();
-      //r has new data
+      // r has new data
       if (r <= 0xFF)
       {
-        //send CD No.
+        // send CD No.
         if ((r & 0xF0) == 0xC0)
         {
           if (r == 0xCA)
@@ -2254,14 +1986,15 @@ int main()
           {
             mix = FALSE;
           }
-          else if ((r & 0x0F) != ( disc & 0x0F))
+          else if ((r & 0x0F) != (disc & 0x0F))
           {
             disc = (r & 0x4F);
           }
         }
-        //send TR No.
+        // send TR No.
         else if (track != r)
-        { track = r;
+        {
+          track = r;
           ResetTime();
         }
       }
@@ -2269,21 +2002,13 @@ int main()
 #endif
 
     CDC_Protocol();
-
   }
-
-
-
 }
-
-
 
 static void printstr_p(const char *s)
 {
 
   char c;
-
-
 
   for (c = pgm_read_byte(s); c; ++s, c = pgm_read_byte(s))
 
@@ -2293,7 +2018,6 @@ static void printstr_p(const char *s)
     if (c == '\n')
 
       break;
-
   }
 }
 

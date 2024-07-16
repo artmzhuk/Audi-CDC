@@ -28,42 +28,32 @@
 
 //-----------------------------------------------------------------------------
 
-
-
 static void ScanCommandBytes(void)
 
 {
 
-
-
   fsr = scanptr;
-
-
 
 FirstByteLoop:
 
-  //printstr_p(PSTR("1"),DEBUG);
+  // printstr_p(PSTR("1"),DEBUG);
 
   if (GetCaptureByte() == FALSE)
 
   {
 
     return;
-
   }
-
-
 
 FirstByteTest:
 
-  //printstr_p(PSTR("2"),DEBUG);
+  // printstr_p(PSTR("2"),DEBUG);
 
   if (scanbyte == 0x53)
 
   {
 
     goto SecondByte;
-
   }
 
   // this byte doesn't match the beginning of a normal command packet,
@@ -74,18 +64,15 @@ FirstByteTest:
 
   goto FirstByteLoop;
 
-
-
 SecondByte:
 
-  //printstr_p(PSTR("3"),DEBUG);
+  // printstr_p(PSTR("3"),DEBUG);
 
   if (GetCaptureByte() == FALSE)
 
   {
 
     return;
-
   }
 
   if (scanbyte == 0x2C) // verify that byte 2 is 0x2C)
@@ -93,7 +80,6 @@ SecondByte:
   {
 
     goto ThirdByte;
-
   }
 
   // the first byte was a match, but the second byte failed.
@@ -104,41 +90,33 @@ SecondByte:
 
   goto FirstByteTest;
 
-
-
 ThirdByte:
 
-  //printstr_p(PSTR("4"),DEBUG);
+  // printstr_p(PSTR("4"),DEBUG);
 
   if (GetCaptureByte() == FALSE)
 
   {
 
     return;
-
   }
 
   cmdcode = scanbyte; // save command code for later use.
 
-
-
 FourthByte:
 
-  //printstr_p(PSTR("5"),DEBUG);
+  // printstr_p(PSTR("5"),DEBUG);
 
   if (GetCaptureByte() == FALSE)
 
   {
 
     return;
-
   }
 
   // if execution reaches here, we have already verified that
 
   // bytes 1 and 2 are valid for a command packet.
-
-
 
   // verify that (Byte 3 + Byte 4) = 0xFF
 
@@ -146,36 +124,25 @@ FourthByte:
 
   {
 
-    //printstr_p(PSTR("6"),DEBUG);
-
-
+    // printstr_p(PSTR("6"),DEBUG);
 
     if ((cmdcode & 0x03) == 0) // verify that Byte 3 is a multiple of 4
 
     {
 
-      //printstr_p(PSTR("7"),DEBUG);
-
-
+      // printstr_p(PSTR("7"),DEBUG);
 
       ACKcount = -4; // acknowledge command
 
       scanptr = fsr; // save scanptr, won't look at this byte again
 
-
-
       // Now, let's jump to the section of code that handles the
 
       // command we just received.
 
-
-
       DecodeCommand();
 
-      //printstr_p(PSTR("\n"),DEBUG);
-
-
-
+      // printstr_p(PSTR("\n"),DEBUG);
     }
 
     else
@@ -183,9 +150,7 @@ FourthByte:
     {
 
       DumpFullCommand(); // ABORT: dump invalid packet for display
-
     }
-
   }
 
   else
@@ -193,12 +158,8 @@ FourthByte:
   {
 
     DumpFullCommand(); // ABORT: dump invalid packet for display
-
   }
-
 }
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -228,8 +189,6 @@ FourthByte:
 
 //-----------------------------------------------------------------------------
 
-
-
 static void DumpFullCommand(void)
 
 {
@@ -241,7 +200,6 @@ static void DumpFullCommand(void)
   {
 
     EnqueueHex(scanbyte);
-
   }
 
   if (GetCaptureByte() == TRUE) // send byte 2
@@ -249,7 +207,6 @@ static void DumpFullCommand(void)
   {
 
     EnqueueHex(scanbyte);
-
   }
 
   if (GetCaptureByte() == TRUE) // send byte 3
@@ -257,7 +214,6 @@ static void DumpFullCommand(void)
   {
 
     EnqueueHex(scanbyte);
-
   }
 
   if (GetCaptureByte() == TRUE) // send byte 4
@@ -265,13 +221,11 @@ static void DumpFullCommand(void)
   {
 
     EnqueueHex(scanbyte);
-
   }
 
   EnqueueString(sNEWLINE);
 
   scanptr = fsr; // save scanptr, won't look at this byte again
-
 }
 
 //-----------------------------------------------------------------------------
@@ -304,8 +258,6 @@ static void DumpFullCommand(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static uint8_t GetCaptureByte(void)
 
 {
@@ -331,22 +283,16 @@ static uint8_t GetCaptureByte(void)
     } // yes, roll over to beginning
 
     return_u8 = TRUE;
-
   }
 
   return return_u8;
-
 }
-
-
 
 //-----------------------------------------------------
 
 // Display Update Packets
 
 //-----------------------------------------------------
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -384,8 +330,6 @@ static uint8_t GetCaptureByte(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SetStateIdle(void)
 
 {
@@ -393,7 +337,6 @@ static void SetStateIdle(void)
   playing = FALSE;
 
   BIDIstate = StateIdle;
-
 }
 static void SetStateTP(void)
 {
@@ -433,8 +376,6 @@ static void SetStateTP(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SetStateIdleThenPlay(void)
 
 {
@@ -444,12 +385,7 @@ static void SetStateIdleThenPlay(void)
   BIDIstate = StateIdleThenPlay;
 
   BIDIcount = -20;
-
 }
-
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -481,8 +417,6 @@ static void SetStateIdleThenPlay(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SetStatePlay(void)
 
 {
@@ -490,12 +424,7 @@ static void SetStatePlay(void)
   playing = TRUE;
 
   BIDIstate = StatePlay;
-
 }
-
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -527,8 +456,6 @@ static void SetStatePlay(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SetStateInitPlay(void)
 
 {
@@ -537,15 +464,10 @@ static void SetStateInitPlay(void)
 
   BIDIstate = StateInitPlay;
 
-  discload = 0xD1; //0xFF - 0x2E
+  discload = 0xD1; // 0xFF - 0x2E
 
   BIDIcount = -24;
-
 }
-
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -593,8 +515,6 @@ static void SetStateInitPlay(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SetStatePlayLeadIn(void)
 
 {
@@ -604,12 +524,7 @@ static void SetStatePlayLeadIn(void)
   BIDIstate = StatePlayLeadIn;
 
   BIDIcount = -10;
-
 }
-
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -673,8 +588,6 @@ static void SetStatePlayLeadIn(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SetStateTrackLeadIn(void)
 
 {
@@ -684,10 +597,7 @@ static void SetStateTrackLeadIn(void)
   BIDIstate = StateTrackLeadIn;
 
   BIDIcount = -12;
-
 }
-
-
 
 // TODO: We might implement one more state machine for
 
@@ -699,17 +609,11 @@ static void SetStateTrackLeadIn(void)
 
 // we are instantly ready (no motoring here!).
 
-
-
 // =========================================================================
 
 // SEND DISPLAY UPDATE PACKETS
 
 // =========================================================================
-
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -741,8 +645,6 @@ static void SetStateTrackLeadIn(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SendDisplayBytes(void)
 
 {
@@ -750,12 +652,7 @@ static void SendDisplayBytes(void)
   SendByte(disc); // disc display value
 
   SendDisplayBytesNoCD();
-
 }
-
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -785,23 +682,17 @@ static void SendDisplayBytes(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SendDisplayBytesNoCD(void)
 
 {
 
   uint8_t send_byte_u8 = 0;
 
-
-
   SendByte(track);
 
   SendByte(minute);
 
   SendByte(second);
-
-
 
   // D4 - scan on, mix on
 
@@ -811,14 +702,11 @@ static void SendDisplayBytesNoCD(void)
 
   // 00 - scan off, mix off
 
-
-
   if (mix == TRUE) // mode (scan/mix)
 
   {
 
     send_byte_u8 |= 0x20; // turn on mix light
-
   }
 
   if (scan == TRUE)
@@ -826,14 +714,10 @@ static void SendDisplayBytesNoCD(void)
   {
 
     send_byte_u8 |= 0x10; // turn on scan display //this probably cose mute for few microsec.
-
   }
 
   SendByte(send_byte_u8);
-
 }
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -869,8 +753,6 @@ static void SendDisplayBytesNoCD(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SendDisplayBytesInitCD(void)
 
 {
@@ -881,15 +763,10 @@ static void SendDisplayBytesInitCD(void)
 
   SendByte(0x59); // total seconds?
 
-  SendByte(0x49);//0xFF - 0xB7 = 48, 53, 31, 25, and 37 seen from real CDC,
+  SendByte(0x49); // 0xFF - 0xB7 = 48, 53, 31, 25, and 37 seen from real CDC,
 
   // no idea what it really means.
-
 }
-
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -927,8 +804,6 @@ static void SendDisplayBytesInitCD(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SendFrameByte(uint8_t byte_u8)
 
 {
@@ -938,7 +813,6 @@ static void SendFrameByte(uint8_t byte_u8)
   {
 
     SendByte(byte_u8);
-
   }
 
   else
@@ -950,14 +824,8 @@ static void SendFrameByte(uint8_t byte_u8)
     ACKcount++;
 
     SendByte(byte_u8);
-
   }
-
 }
-
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -991,8 +859,6 @@ static void SendFrameByte(uint8_t byte_u8)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SendByte(uint8_t byte_u8)
 
 {
@@ -1017,17 +883,11 @@ static void SendByte(uint8_t byte_u8)
 
     TCCR2B |= _BV(CS22); // prescaler = 64 -> 1 timer clock tick is 4us long
 
-    //TCCR2A |= _BV(CS20);
+    // TCCR2A |= _BV(CS20);
 
     TIMSK2 |= _BV(OCIE2A); // enable output compare interrupt on timer2
-
   }
-
 }
-
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -1059,8 +919,6 @@ static void SendByte(uint8_t byte_u8)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void EnqueueString(const uint8_t *addr PROGMEM)
 
 {
@@ -1076,14 +934,10 @@ static void EnqueueString(const uint8_t *addr PROGMEM)
   {
 
     txinptr = 0;
-
   }
 
 #endif
-
 }
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -1113,15 +967,11 @@ static void EnqueueString(const uint8_t *addr PROGMEM)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void EnqueueHex(uint8_t hexbyte_u8)
 
 {
 
   uint8_t nibble_u8;
-
-
 
   nibble_u8 = hexbyte_u8 >> 4; // send high nibble first
 
@@ -1129,17 +979,12 @@ static void EnqueueHex(uint8_t hexbyte_u8)
 
   EnqueueString(&sHEX[nibble_u8]);
 
-
-
   nibble_u8 = hexbyte_u8 & 0x0F; // prepare low nibble
 
   nibble_u8 <<= 1; // multiply low nibble by 2
 
   EnqueueString(&sHEX[nibble_u8]);
-
 }
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -1169,8 +1014,6 @@ static void EnqueueHex(uint8_t hexbyte_u8)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void ResetTime(void)
 
 {
@@ -1180,10 +1023,7 @@ static void ResetTime(void)
   second = 0;
 
   minute = 0;
-
 }
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -1213,31 +1053,28 @@ static void ResetTime(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SendStateIdle(void)
 
 {
 
   secondcount = SECONDWAIT; // stop display from ticking time
 
-  SendFrameByte(0x8B);//FF - 0x74
+  SendFrameByte(0x8B); // FF - 0x74
 
   SendDisplayBytes();
 
-  SendByte(0x70);//FF - 0x8F, mutes audio on Monsoon head units
+  SendByte(0x70); // FF - 0x8F, mutes audio on Monsoon head units
 
-  SendFrameByte(0x83);//FF - 0x7C
-
+  SendFrameByte(0x83); // FF - 0x7C
 }
 
 static void SendStateTP(void)
-{ //B4 BE EF FE DB FF DF BC
+{                           // B4 BE EF FE DB FF DF BC
   secondcount = SECONDWAIT; // stop display from ticking time
-  SendFrameByte(0x4B);//FF - 0x4b
+  SendFrameByte(0x4B);      // FF - 0x4b
   SendDisplayBytes();
   SendByte(0x20);
-  SendFrameByte(0x43);//FF - 0x7C
+  SendFrameByte(0x43); // FF - 0x7C
 }
 
 //-----------------------------------------------------------------------------
@@ -1268,13 +1105,11 @@ static void SendStateTP(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SendStatePlayLeadInEnd(void)
 
 {
 
-  SendFrameByte(0xC3);//FF - 0x3C
+  SendFrameByte(0xC3); // FF - 0x3C
 
   BIDIcount++;
 
@@ -1283,12 +1118,8 @@ static void SendStatePlayLeadInEnd(void)
   {
 
     SetStatePlay();
-
   }
-
 }
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -1318,13 +1149,11 @@ static void SendStatePlayLeadInEnd(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SendStateInitPlayEnd(void)
 
 {
 
-  SendFrameByte(0xC3);//FF - 0x3C
+  SendFrameByte(0xC3); // FF - 0x3C
 
   BIDIcount++;
 
@@ -1333,14 +1162,8 @@ static void SendStateInitPlayEnd(void)
   {
 
     SetStatePlayLeadIn();
-
   }
-
 }
-
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -1370,8 +1193,6 @@ static void SendStateInitPlayEnd(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SendStateInitPlayAnnounceCD(void)
 
 {
@@ -1393,7 +1214,6 @@ static void SendStateInitPlayAnnounceCD(void)
   {
 
     discload = 0xD1;
-
   }
 
   else
@@ -1401,18 +1221,14 @@ static void SendStateInitPlayAnnounceCD(void)
   {
 
     discload++;
-
   }
 
   SendDisplayBytesInitCD();
 
-  SendByte(0x00);//0xFF - 0xFF
+  SendByte(0x00); // 0xFF - 0xFF
 
   SendStateInitPlayEnd();
-
 }
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -1442,8 +1258,6 @@ static void SendStateInitPlayAnnounceCD(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SendStatePlayLeadInAnnounceCD(void)
 
 {
@@ -1452,15 +1266,10 @@ static void SendStatePlayLeadInAnnounceCD(void)
 
   SendDisplayBytesInitCD();
 
-  SendByte(0x00);//0xFF - 0xFF
+  SendByte(0x00); // 0xFF - 0xFF
 
   SendStatePlayLeadInEnd();
-
 }
-
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -1490,49 +1299,42 @@ static void SendStatePlayLeadInAnnounceCD(void)
 
 //-----------------------------------------------------------------------------
 
-
-
 static void SendPacket(void)
 
 {
 
-  switch (BIDIstate) {
-    case StateTP:
-      SendStateTP();
-      break;
-    case StateIdle:
+  switch (BIDIstate)
+  {
+  case StateTP:
+    SendStateTP();
+    break;
+  case StateIdle:
+
+    SendStateIdle();
+
+    break;
+
+  case StateIdleThenPlay:
+
+    BIDIcount++;
+
+    if (BIDIcount == 0)
+
+    {
+
+      SetStateInitPlay();
 
       SendStateIdle();
+    }
 
-      break;
+    else
 
+    {
 
+      SendStateIdle();
+    }
 
-    case StateIdleThenPlay:
-
-      BIDIcount++;
-
-      if (BIDIcount == 0)
-
-      {
-
-        SetStateInitPlay();
-
-        SendStateIdle();
-
-      }
-
-      else
-
-      {
-
-        SendStateIdle();
-
-      }
-
-      break;
-
-
+    break;
 
     // 34 2E ED DE AF B7 FF 3C
 
@@ -1558,152 +1360,125 @@ static void SendPacket(void)
 
     // 34 BE FE FF FF FF EF 3C
 
+  case StateInitPlay:
 
+    secondcount = SECONDWAIT; // stop display from ticking time
 
-    case StateInitPlay:
+    SendFrameByte(0xCB); // 0xFF - 0x34
 
-      secondcount = SECONDWAIT; // stop display from ticking time
+    if ((BIDIcount & 0x01) == 0)
 
-      SendFrameByte(0xCB);//0xFF - 0x34
-
-      if ((BIDIcount & 0x01) == 0)
-
-      {
-
-        SendStateInitPlayAnnounceCD();
-
-        break;
-
-      }
-
-      SendDisplayBytes();
-
-      SendByte(0x10);//0xFF - 0xEF
-
-
-
-    case StateInitPlayEnd:
-
-      SendStateInitPlayEnd();
-
-      break;
-
-
-
-    case StateInitPlayAnnounceCD:
+    {
 
       SendStateInitPlayAnnounceCD();
 
       break;
+    }
 
+    SendDisplayBytes();
 
+    SendByte(0x10); // 0xFF - 0xEF
 
-    case StatePlayLeadIn:
+  case StateInitPlayEnd:
 
-      // 34 BE FE FF FF FF AE 3C (play lead-in)
+    SendStateInitPlayEnd();
 
-      // 34 2E ED DE AF B7 FF 3C
+    break;
 
-      // 34 BE FE FF FF FF AE 3C
+  case StateInitPlayAnnounceCD:
 
-      // 34 2E ED DE AF B7 FF 3C
+    SendStateInitPlayAnnounceCD();
 
-      // 34 BE FE FF FF FF AE 3C
+    break;
 
-      // 34 2E ED DE AF B7 FF 3C
+  case StatePlayLeadIn:
 
-      // 34 BE FE FF FF FF AE 3C
+    // 34 BE FE FF FF FF AE 3C (play lead-in)
 
-      // 34 2E ED DE AF B7 FF 3C
+    // 34 2E ED DE AF B7 FF 3C
 
-      // 34 BE FE FF FF FF AE 3C
+    // 34 BE FE FF FF FF AE 3C
 
-      secondcount = SECONDWAIT; // stop display from ticking time
+    // 34 2E ED DE AF B7 FF 3C
 
-      SendFrameByte(0xCB);//0xFF - 0x34
+    // 34 BE FE FF FF FF AE 3C
 
+    // 34 2E ED DE AF B7 FF 3C
 
+    // 34 BE FE FF FF FF AE 3C
 
-      if ((BIDIcount & 0x01) == 0)
+    // 34 2E ED DE AF B7 FF 3C
 
-      {
+    // 34 BE FE FF FF FF AE 3C
 
-        SendStatePlayLeadInAnnounceCD();
+    secondcount = SECONDWAIT; // stop display from ticking time
 
-        break;
+    SendFrameByte(0xCB); // 0xFF - 0x34
 
-      }
+    if ((BIDIcount & 0x01) == 0)
 
-      SendDisplayBytes();
-
-      SendByte(0x51);//0xFF - 0xAE
-
-
-
-    case StatePlayLeadInEnd:
-
-      SendStatePlayLeadInEnd();
-
-      break;
-
-
-
-    case StatePlayLeadInAnnounceCD:
+    {
 
       SendStatePlayLeadInAnnounceCD();
 
       break;
+    }
 
+    SendDisplayBytes();
 
+    SendByte(0x51); // 0xFF - 0xAE
 
-    case StateTrackLeadIn:
+  case StatePlayLeadInEnd:
 
-      secondcount = SECONDWAIT; // stop display from ticking time
+    SendStatePlayLeadInEnd();
 
-      SendFrameByte(0xCB);//0xFF - 0x34
+    break;
 
-      SendDisplayBytes();
+  case StatePlayLeadInAnnounceCD:
 
-      SendByte(0x51);//0xFF - 0xAE
+    SendStatePlayLeadInAnnounceCD();
 
-      SendFrameByte(0xC3);//0xFF - 0x3C
+    break;
 
-      BIDIcount++;
+  case StateTrackLeadIn:
 
+    secondcount = SECONDWAIT; // stop display from ticking time
 
+    SendFrameByte(0xCB); // 0xFF - 0x34
 
-      if (BIDIcount == 0)
+    SendDisplayBytes();
 
-      {
+    SendByte(0x51); // 0xFF - 0xAE
 
-        break;
+    SendFrameByte(0xC3); // 0xFF - 0x3C
 
-      }
+    BIDIcount++;
 
-      SetStatePlay();
+    if (BIDIcount == 0)
 
-      break;
-
-
-
-    case StatePlay:
-
-      SendFrameByte(0xCB);//0xFF - 0x34
-
-      SendDisplayBytes();
-
-      SendByte(0x30);//0xFF - 0xCF
-
-      SendFrameByte(0xC3);//FF - 0x3C
+    {
 
       break;
+    }
 
-    default:
+    SetStatePlay();
 
-      break;
+    break;
 
+  case StatePlay:
+
+    SendFrameByte(0xCB); // 0xFF - 0x34
+
+    SendDisplayBytes();
+
+    SendByte(0x30); // 0xFF - 0xCF
+
+    SendFrameByte(0xC3); // FF - 0x3C
+
+    break;
+
+  default:
+
+    break;
   }
-
-
-
 }
