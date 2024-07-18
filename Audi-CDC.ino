@@ -50,6 +50,8 @@
 
 // #include "IS2020.h"
 
+#define PRESSTIME 20
+
 #define DEBUG 0
 #define RESET 4 //?
 #define BTSerial Serial
@@ -567,13 +569,15 @@ uint8_t counter_timer0_overflows = 0; // timer0 overflow counts to calc 10ms
 #endif
 
 uint8_t playIsPressed = 0;
-uint8_t forwardIsPressed = 0;
-uint8_t backwardIsPressed = 0;
+//uint8_t forwardIsPressed = 0;
+//uint8_t backwardIsPressed = 0;
 
 uint8_t needToReleasePlay = 0;
-uint8_t needToReleaseForward = 0;
-uint8_t needToReleaseBackward = 0;
+//uint8_t needToReleaseForward = 0;
+//uint8_t needToReleaseBackward = 0;
 
+uint16_t forwardCounter = 0;
+uint16_t backwardCounter = 0;
 /* -- Modul Global Function Prototypes ------------------------------------- */
 
 static void ScanCommandBytes(void);
@@ -1307,22 +1311,20 @@ void CDC_Protocol(void)
       needToReleasePlay = 1;
     }
 
-    if (needToReleaseForward == 1){
-      needToReleaseForward = 0;
-      forwardIsPressed = 0;
+    if (forwardCounter == 1){
+      forwardCounter = 0;
+      //forwardIsPressed = 0;
       pinMode(3, INPUT);
-    }
-    if (forwardIsPressed == 1){
-      needToReleaseForward = 1;
+    } else if (forwardCounter > 1){
+      forwardCounter--;
     }
 
-    if (needToReleaseBackward == 1){
-      needToReleaseBackward = 0;
-      backwardIsPressed = 0;
+    if (backwardCounter == 1){
+      backwardCounter = 0;
+      //backwardIsPressed = 0;
       pinMode(4, INPUT);
-    }
-    if (backwardIsPressed == 1){
-      needToReleaseBackward = 1;
+    }else if (backwardCounter > 1){
+      backwardCounter--;
     }
 
 
@@ -1667,8 +1669,10 @@ static void DecodeCommand(void)
     if (cd_button == FALSE) // mk don't increment when previous command was a cd button
 
     {
-
-      EnqueueString(sNXT_LIST);
+      pinMode(2, OUTPUT);
+      digitalWrite(2, LOW); //play button is pressed
+      playIsPressed = 1;
+      //EnqueueString(sNXT_LIST);
 
 #ifndef DISC_TRACK_NUMBER_FROM_MPD
 
@@ -1735,10 +1739,7 @@ static void DecodeCommand(void)
     break;
 
   case Do_PLAY:
-    pinMode(2, OUTPUT);
-    digitalWrite(2, LOW); //play button is pressed
-    playIsPressed = 1;
-    //EnqueueString(sPLAY); // this will make the PJRC play/pause
+    EnqueueString(sPLAY); // this will make the PJRC play/pause
 
     break;
 
@@ -1808,7 +1809,7 @@ static void DecodeCommand(void)
 
     pinMode(3, OUTPUT);
     digitalWrite(3, LOW); //forward button is pressed
-    forwardIsPressed = 1;
+    forwardCounter += 2;
     //EnqueueString(sNEXT);
 
     break;
@@ -1849,8 +1850,8 @@ static void DecodeCommand(void)
 #endif
 
     pinMode(4, OUTPUT);
-    digitalWrite(4, LOW); //forward button is pressed
-    backwardIsPressed = 1;
+    digitalWrite(4, LOW); //backward button is pressed
+    backwardCounter += 2;
     //EnqueueString(sPREVIOUS);
 
     break;
@@ -1908,6 +1909,9 @@ static void DecodeCommand(void)
 #endif
 
     EnqueueString(sLIST4);
+    pinMode(4, OUTPUT);
+    digitalWrite(4, LOW); //backward button is pressed
+    backwardCounter += PRESSTIME;
 
     break;
 
@@ -1922,7 +1926,9 @@ static void DecodeCommand(void)
 #endif
 
     EnqueueString(sLIST5);
-
+    pinMode(3, OUTPUT);
+    digitalWrite(3, LOW); //forward button is pressed
+    forwardCounter += PRESSTIME;
     break;
 
   case Do_CD6:
