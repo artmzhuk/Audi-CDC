@@ -578,6 +578,7 @@ uint8_t needToReleasePlay = 0;
 
 uint16_t forwardCounter = 0;
 uint16_t backwardCounter = 0;
+uint8_t forwardIsLimited = 0;
 /* -- Modul Global Function Prototypes ------------------------------------- */
 
 static void ScanCommandBytes(void);
@@ -1311,11 +1312,22 @@ void CDC_Protocol(void)
       needToReleasePlay = 1;
     }
 
+    if (forwardCounter > 1 && backwardCounter > 1){ //disable both, to avoid beeping
+      forwardCounter = 0;
+      forwardIsLimited = 0;
+      backwardCounter = 0;
+      pinMode(3, INPUT);
+      pinMode(4, INPUT);
+    }
     if (forwardCounter == 1){
       forwardCounter = 0;
+      forwardIsLimited = 0;
       //forwardIsPressed = 0;
       pinMode(3, INPUT);
     } else if (forwardCounter > 1){
+      if (forwardCounter > 120){
+        forwardIsLimited = 1;
+      }
       forwardCounter--;
     }
 
@@ -1928,7 +1940,9 @@ static void DecodeCommand(void)
     EnqueueString(sLIST5);
     pinMode(3, OUTPUT);
     digitalWrite(3, LOW); //forward button is pressed
-    forwardCounter += PRESSTIME;
+    if (!forwardIsLimited){
+      forwardCounter += PRESSTIME;
+    }
     break;
 
   case Do_CD6:
